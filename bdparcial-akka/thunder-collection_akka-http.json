@@ -1,0 +1,82 @@
+{
+  "_type": "collection",
+  "name": "Akka HTTP Endpoints",
+  "requests": [
+    {
+      "_type": "request",
+      "name": "Página principal",
+      "method": "GET",
+      "url": "http://localhost:8080/",
+      "body": {
+        "type": "none"
+      }
+    },
+    {
+      "_type": "request",
+      "name": "Crear pedido",
+      "method": "POST",
+      "url": "http://localhost:8080/pedido",
+      "body": {
+        "type": "form",
+        "form": [
+          { "key": "idCliente", "value": "1", "type": "text" },
+          { "key": "idProducto1", "value": "10", "type": "text" },
+          { "key": "cantidad1", "value": "2", "type": "text" },
+          { "key": "idProducto2", "value": "12", "type": "text" },
+          { "key": "cantidad2", "value": "1", "type": "text" }
+        ]
+      }
+    },
+    {
+      "_type": "request",
+      "name": "Crear reseña",
+      "method": "POST",
+      "url": "http://localhost:8080/resena",
+      "body": {
+        "type": "form",
+        "form": [
+          { "key": "idCliente", "value": "1", "type": "text" },
+          { "key": "idProducto", "value": "10", "type": "text" },
+          { "key": "calificacion", "value": "5", "type": "text" },
+          { "key": "comentario", "value": "Excelente", "type": "text" }
+        ]
+      }
+    },
+    {
+      "_type": "request",
+      "name": "Listar reseñas de un producto",
+      "method": "GET",
+      "url": "http://localhost:8080/resenas?idProducto=10",
+      "body": {
+        "type": "none"
+      }
+    },
+    {
+      "_type": "request",
+      "name": "Listar pedidos de un cliente",
+      "method": "GET",
+      "url": "http://localhost:8080/pedidos?idCliente=1",
+      "body": {
+        "type": "none"
+      }
+    },
+    {
+      "_type": "request",
+      "name": "Listar todos los pedidos",
+      "method": "GET",
+      "url": "http://localhost:8080/pedidos",
+      "body": {
+        "type": "none"
+      }
+    },
+    {
+      "_type": "request",
+      "name": "Listar productos",
+      "method": "GET",
+      "url": "http://localhost:8080/productos",
+      "body": {
+        "type": "none"
+      }
+    }
+  ]
+}

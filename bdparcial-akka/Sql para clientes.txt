@@ -1,0 +1,120 @@
+USE bdparcial;
+
+INSERT INTO clientes (nombre, correo) VALUES
+('Carlos Mendoza', 'carlos.mendoza@example.com'),
+('Lucía Ortega', 'lucia.ortega@example.com'),
+('Marcos Rivas', 'marcos.rivas@example.com'),
+('Sofía Torres', 'sofia.torres@example.com'),
+('Diego Fernández', 'diego.fernandez@example.com'),
+('Elena Castillo', 'elena.castillo@example.com'),
+('Javier Salas', 'javier.salas@example.com'),
+('Patricia Gómez', 'patricia.gomez@example.com'),
+('Roberto Núñez', 'roberto.nunez@example.com'),
+('Valeria Duarte', 'valeria.duarte@example.com');
+
+INSERT INTO productos (nombre, precio) VALUES
+('Audífonos inalámbricos', 60.00),
+('Alfombrilla RGB', 25.00),
+('Webcam Full HD', 45.00),
+('Silla ergonómica', 220.00),
+('Micrófono condensador', 75.00),
+('Control inalámbrico', 55.00),
+('Disco SSD 1TB', 95.00),
+('Barra de sonido', 130.00),
+('Impresora multifunción', 180.00),
+('Lámpara LED de escritorio', 30.00),
+('Parlantes Bluetooth', 50.00),
+('Router WiFi 6', 140.00),
+('Cámara de seguridad', 85.00),
+('Hub USB-C', 40.00),
+('Memoria USB 128GB', 20.00),
+('Smartwatch deportivo', 110.00),
+('Soporte para laptop', 28.00),
+('Cargador inalámbrico', 25.00);
+
+
+
+
+
+{
+  "_type": "collection",
+  "name": "Akka HTTP Endpoints",
+  "requests": [
+    {
+      "_type": "request",
+      "name": "Página principal",
+      "method": "GET",
+      "url": "http://localhost:8080/",
+      "body": {
+        "type": "none"
+      }
+    },
+    {
+      "_type": "request",
+      "name": "Crear pedido",
+      "method": "POST",
+      "url": "http://localhost:8080/pedido",
+      "body": {
+        "type": "form",
+        "form": [
+          { "key": "idCliente", "value": "1", "type": "text" },
+          { "key": "idProducto1", "value": "10", "type": "text" },
+          { "key": "cantidad1", "value": "2", "type": "text" },
+          { "key": "idProducto2", "value": "12", "type": "text" },
+          { "key": "cantidad2", "value": "1", "type": "text" }
+        ]
+      }
+    },
+    {
+      "_type": "request",
+      "name": "Crear reseña",
+      "method": "POST",
+      "url": "http://localhost:8080/resena",
+      "body": {
+        "type": "form",
+        "form": [
+          { "key": "idCliente", "value": "1", "type": "text" },
+          { "key": "idProducto", "value": "10", "type": "text" },
+          { "key": "calificacion", "value": "5", "type": "text" },
+          { "key": "comentario", "value": "Excelente", "type": "text" }
+        ]
+      }
+    },
+    {
+      "_type": "request",
+      "name": "Listar reseñas de un producto",
+      "method": "GET",
+      "url": "http://localhost:8080/resenas?idProducto=10",
+      "body": {
+        "type": "none"
+      }
+    },
+    {
+      "_type": "request",
+      "name": "Listar pedidos de un cliente",
+      "method": "GET",
+      "url": "http://localhost:8080/pedidos?idCliente=1",
+      "body": {
+        "type": "none"
+      }
+    },
+    {
+      "_type": "request",
+      "name": "Listar todos los pedidos",
+      "method": "GET",
+      "url": "http://localhost:8080/pedidos",
+      "body": {
+        "type": "none"
+      }
+    },
+    {
+      "_type": "request",
+      "name": "Listar productos",
+      "method": "GET",
+      "url": "http://localhost:8080/productos",
+      "body": {
+        "type": "none"
+      }
+    }
+  ]
+}
