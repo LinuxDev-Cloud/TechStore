@@ -46,3 +46,16 @@ case class ResenasPorProducto(
   idProducto: Int,
   resenas: List[(Int, Int, String)] // (idCliente, calificacion, comentario)
 )
+
+// ----- Facturación -----
+case object ObtenerFacturasPorCliente
+case class ObtenerFacturaCliente(idCliente: Int)
+
+case class FacturaCliente(
+  idCliente: Int,
+  nombreCliente: String,
+  pedidos: List[(Int, String, BigDecimal)], // (idPedido, fecha, total)
+  totalGeneral: BigDecimal
+)
+
+case class FacturaFallida(razon: String)

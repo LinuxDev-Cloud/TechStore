@@ -1,5 +1,7 @@
-[0m[[0m[33mwarn[0m] [0m[0mC:\Users\HinojosaDev\Downloads\Concurrente\bdparcial-akka\src\main\scala\parcial\WebMain.scala:17:16: Implicit definition should have explicit type (inferred scala.concurrent.ExecutionContextExecutor) [quickfixable][0m
-[0m[[0m[33mwarn[0m] [0m[0m  implicit val ec                   = system.dispatcher[0m
-[0m[[0m[33mwarn[0m] [0m[0m               ^[0m
-[0m[[0m[33mwarn[0m] [0m[0m1 deprecation (since 2.13.3); re-run with -deprecation for details[0m
-[0m[[0m[33mwarn[0m] [0m[0mtwo warnings found[0m
+[warn] C:\Users\HinojosaDev\Downloads\Concurrente\bdparcial-akka\src\main\scala\parcial\WebMain.scala:17:16: Implicit definition should have explicit type (inferred scala.concurrent.ExecutionContextExecutor) [quickfixable]
+[warn]   implicit val ec                   = system.dispatcher
+[warn]                ^
+[warn] 4 deprecations (since 2.12.16)
+[warn] 2 deprecations (since 2.13.3)
+[warn] 6 deprecations in total; re-run with -deprecation for details
+[warn] four warnings found

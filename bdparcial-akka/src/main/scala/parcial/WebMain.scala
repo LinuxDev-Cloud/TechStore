@@ -18,6 +18,7 @@ object WebMain extends App {
   implicit val timeout: Timeout     = Timeout(5.seconds)
 
   val databaseActor = system.actorOf(Props[DatabaseActor], "databaseActor-web")
+  val facturacionActor = system.actorOf(Props[FacturacionActor], "facturacionActor-web")
 
   val indexHtml: String =
     """
@@ -213,6 +214,19 @@ object WebMain extends App {
       |          <div class="links">
       |            <a class="button-link" href="/productos">Ver productos</a>
       |          </div>
+      |        </section>
+      |
+      |        <section class="card">
+      |          <h2>Ver facturas</h2>
+      |          <p class="description">Muestra las facturas de clientes con el total de sus pedidos en pesos colombianos.</p>
+      |          <div class="links">
+      |            <a class="button-link" href="/facturas">Ver todas las facturas</a>
+      |          </div>
+      |          <form method="GET" action="/facturas">
+      |            <label>Id cliente:</label>
+      |            <input name="idCliente" type="number" placeholder="Ej: 1"/>
+      |            <input type="submit" value="Ver factura por cliente"/>
+      |          </form>
       |        </section>
       |      </div>
       |    </div>
@@ -482,6 +496,105 @@ object WebMain extends App {
                |""".stripMargin
 
             complete(HttpEntity(ContentTypes.`text/html(UTF-8)`, layoutPage("Catálogo de productos", body)))
+          }
+        }
+      } ~
+      path("facturas") {
+        get {
+          parameter("idCliente".?) { idClienteOpt =>
+            idClienteOpt.flatMap(_.toIntOption) match {
+              case Some(idCli) =>
+                // Factura de un cliente específico
+                val f: Future[FacturaCliente] =
+                  (facturacionActor ? ObtenerFacturaCliente(idCli)).mapTo[FacturaCliente]
+
+                onSuccess(f) { factura =>
+                  val pedidosHtml = if (factura.pedidos.isEmpty) {
+                    "<p style='color: #9ca3af; font-size: 0.8rem; margin-left: 18px;'>Sin pedidos</p>"
+                  } else {
+                    val pedidosList = factura.pedidos.map { case (idPed, fecha, total) =>
+                      val totalFormateado = total.formatted("%,.2f")
+                      s"<li style='margin-bottom: 4px;'>Pedido #$idPed - $fecha - <strong>$$${totalFormateado} COP</strong></li>"
+                    }.mkString("\n")
+                    s"<ul style='margin-top: 8px; margin-left: 18px;'>$pedidosList</ul>"
+                  }
+
+                  val totalFormateado = factura.totalGeneral.formatted("%,.2f")
+                  val contenido = s"""
+                     |<div style='margin-bottom: 24px; padding: 20px; border: 1px solid rgba(148, 163, 184, 0.3); border-radius: 8px;'>
+                     |  <h3 style='color: #f9fafb; margin-bottom: 16px;'>Factura del Cliente</h3>
+                     |  <div style='margin-bottom: 12px;'>
+                     |    <strong style='color: #e5e7eb;'>Cliente:</strong> ${factura.nombreCliente} (ID: ${factura.idCliente})
+                     |  </div>
+                     |  <div style='margin-bottom: 12px;'>
+                     |    <strong style='color: #e5e7eb;'>Pedidos:</strong>
+                     |    $pedidosHtml
+                     |  </div>
+                     |  <div style='margin-top: 16px; padding-top: 12px; border-top: 1px solid rgba(148, 163, 184, 0.3);'>
+                     |    <strong style='color: #10b981; font-size: 1.2rem;'>Total General: $$${totalFormateado} COP</strong>
+                     |  </div>
+                     |</div>
+                     |""".stripMargin
+
+                  val body = s"""
+                     |$contenido
+                     |<div class="links" style="margin-top:20px;">
+                     |  <a class="button-link" href="/">Volver al inicio</a>
+                     |  <a class="button-link" href="/facturas">Ver todas las facturas</a>
+                     |</div>
+                     |""".stripMargin
+
+                  complete(HttpEntity(ContentTypes.`text/html(UTF-8)`, layoutPage(s"Factura - ${factura.nombreCliente}", body)))
+                }
+
+              case None =>
+                // Todas las facturas
+                val f: Future[List[FacturaCliente]] =
+                  (facturacionActor ? ObtenerFacturasPorCliente).mapTo[List[FacturaCliente]]
+
+                onSuccess(f) { facturas =>
+                  val contenido = if (facturas.isEmpty) {
+                    "<p>(sin facturas generadas)</p>"
+                  } else {
+                    val facturasHtml = facturas.map { factura =>
+                      val pedidosHtml = if (factura.pedidos.isEmpty) {
+                        "<p style='color: #9ca3af; font-size: 0.8rem; margin-left: 18px;'>Sin pedidos</p>"
+                      } else {
+                        val pedidosList = factura.pedidos.map { case (idPed, fecha, total) =>
+                          val totalFormateado = total.formatted("%,.2f")
+                          s"<li style='margin-bottom: 4px;'>Pedido #$idPed - $fecha - <strong>$$${totalFormateado} COP</strong></li>"
+                        }.mkString("\n")
+                        s"<ul style='margin-top: 8px; margin-left: 18px;'>$pedidosList</ul>"
+                      }
+
+                      val totalFormateado = factura.totalGeneral.formatted("%,.2f")
+                      s"""
+                         |<div style='margin-bottom: 24px; padding: 16px; border: 1px solid rgba(148, 163, 184, 0.3); border-radius: 8px;'>
+                         |  <h3 style='color: #f9fafb; margin-bottom: 12px;'>Cliente: ${factura.nombreCliente} (ID: ${factura.idCliente})</h3>
+                         |  <div style='margin-bottom: 10px;'>
+                         |    <strong style='color: #e5e7eb;'>Pedidos:</strong>
+                         |    $pedidosHtml
+                         |  </div>
+                         |  <div style='margin-top: 12px; padding-top: 10px; border-top: 1px solid rgba(148, 163, 184, 0.3);'>
+                         |    <strong style='color: #10b981; font-size: 1.1rem;'>Total General: $$${totalFormateado} COP</strong>
+                         |  </div>
+                         |</div>
+                         |""".stripMargin
+                    }.mkString("\n")
+
+                    facturasHtml
+                  }
+
+                  val body = s"""
+                     |$contenido
+                     |<div class="links" style="margin-top:20px;">
+                     |  <a class="button-link" href="/">Volver al inicio</a>
+                     |</div>
+                     |""".stripMargin
+
+                  complete(HttpEntity(ContentTypes.`text/html(UTF-8)`, layoutPage("Facturas de Todos los Clientes", body)))
+                }
+            }
           }
         }
       }
